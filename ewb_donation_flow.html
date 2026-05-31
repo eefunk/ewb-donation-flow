@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineers Without Borders – Donate</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* HEADER */
+  header {
+    width: 100%;
+    background: #1a3a5c;
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header .logo {
+    width: 42px; height: 42px;
+    background: #f0a500;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #1a3a5c;
+  }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 13px; opacity: 0.75; }
+
+  /* PROGRESS BAR */
+  .campaign-bar {
+    width: 100%; max-width: 680px;
+    background: white;
+    border-radius: 12px;
+    margin: 32px 16px 0;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  .campaign-bar h2 { font-size: 17px; color: #1a3a5c; margin-bottom: 4px; }
+  .campaign-bar .sub { font-size: 13px; color: #666; margin-bottom: 14px; }
+  .progress-track {
+    background: #e8eef5; border-radius: 99px; height: 10px; overflow: hidden; margin-bottom: 8px;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #1a3a5c, #f0a500);
+    height: 100%; border-radius: 99px;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-stats { display: flex; justify-content: space-between; font-size: 13px; color: #555; }
+  .progress-stats strong { color: #1a3a5c; }
+
+  /* WIDGET */
+  .widget {
+    width: 100%; max-width: 680px;
+    background: white;
+    border-radius: 12px;
+    margin: 18px 16px 32px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex; gap: 0; margin-bottom: 28px;
+  }
+  .step {
+    flex: 1; text-align: center; position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 14px; left: 50%; width: 100%; height: 2px;
+    background: #e0e0e0;
+    z-index: 0;
+  }
+  .step.done:not(:last-child)::after { background: #1a3a5c; }
+  .step-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #e8eef5; color: #999;
+    font-size: 13px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    transition: all .3s;
+  }
+  .step.active .step-dot { background: #1a3a5c; color: white; }
+  .step.done .step-dot { background: #f0a500; color: white; }
+  .step-label { font-size: 11px; color: #888; margin-top: 4px; }
+  .step.active .step-label { color: #1a3a5c; font-weight: 600; }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* AMOUNT SCREEN */
+  .amount-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;
+  }
+  .amt-btn {
+    border: 2px solid #e0e8f0; border-radius: 8px;
+    padding: 14px 8px; text-align: center; cursor: pointer;
+    transition: all .2s; background: white;
+    font-family: inherit;
+  }
+  .amt-btn:hover { border-color: #1a3a5c; }
+  .amt-btn.selected { border-color: #1a3a5c; background: #eef3f9; }
+  .amt-btn .amount { font-size: 22px; font-weight: 700; color: #1a3a5c; }
+  .amt-btn .impact { font-size: 11px; color: #888; margin-top: 3px; }
+
+  .custom-wrap { position: relative; margin-bottom: 20px; }
+  .custom-wrap span {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: #888; font-size: 16px;
+  }
+  .custom-wrap input {
+    width: 100%; padding: 12px 14px 12px 28px;
+    border: 2px solid #e0e8f0; border-radius: 8px;
+    font-size: 16px; font-family: inherit; outline: none;
+    transition: border .2s;
+  }
+  .custom-wrap input:focus { border-color: #1a3a5c; }
+
+  label { font-size: 14px; color: #444; font-weight: 500; display: block; margin-bottom: 6px; }
+
+  /* FREQUENCY */
+  .freq-toggle {
+    display: flex; gap: 0; border: 2px solid #e0e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 20px;
+  }
+  .freq-btn {
+    flex: 1; padding: 10px; text-align: center; cursor: pointer;
+    font-size: 14px; font-family: inherit; border: none; background: white;
+    transition: all .2s;
+  }
+  .freq-btn.selected { background: #1a3a5c; color: white; font-weight: 600; }
+
+  /* PAYMENT SCREEN */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 11px 14px;
+    border: 2px solid #e0e8f0; border-radius: 8px;
+    font-size: 15px; font-family: inherit; outline: none; transition: border .2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: #1a3a5c; }
+
+  .card-row {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 14px;
+  }
+
+  .secure-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: #888; margin-bottom: 18px;
+  }
+  .secure-badge svg { color: #27ae60; }
+
+  /* SUMMARY BOX */
+  .summary-box {
+    background: #f5f8fc; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .summary-box .label { font-size: 13px; color: #666; }
+  .summary-box .value { font-size: 18px; font-weight: 700; color: #1a3a5c; }
+
+  /* BUTTON */
+  .btn-primary {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #1a3a5c, #2a5a8c);
+    color: white; font-size: 16px; font-weight: 700;
+    border: none; border-radius: 8px; cursor: pointer;
+    font-family: inherit; transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 14px rgba(26,58,92,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(26,58,92,0.35); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-back {
+    background: none; border: none; color: #888; font-size: 14px;
+    cursor: pointer; font-family: inherit; padding: 0; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .btn-back:hover { color: #1a3a5c; }
+
+  /* SUCCESS */
+  .success-screen {
+    text-align: center; padding: 20px 0;
+  }
+  .success-icon {
+    width: 72px; height: 72px; background: #e8f7f0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 36px;
+  }
+  .success-screen h2 { color: #1a3a5c; font-size: 24px; margin-bottom: 8px; }
+  .success-screen p { color: #666; font-size: 15px; line-height: 1.6; max-width: 400px; margin: 0 auto 24px; }
+  .impact-cards {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 24px;
+  }
+  .impact-card {
+    background: #f5f8fc; border-radius: 8px; padding: 14px 10px; text-align: center;
+  }
+  .impact-card .icon { font-size: 24px; margin-bottom: 6px; }
+  .impact-card .text { font-size: 12px; color: #555; line-height: 1.4; }
+
+  .receipt {
+    background: #f5f8fc; border-radius: 8px; padding: 16px; text-align: left; margin-bottom: 20px;
+    font-size: 13px; color: #555;
+  }
+  .receipt-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .receipt-row strong { color: #1a3a5c; }
+  .divider { border: none; border-top: 1px solid #e0e8f0; margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">EWB</div>
+  <div>
+    <h1>Engineers Without Borders – ASU Chapter</h1>
+    <p>Building sustainable infrastructure for communities in need</p>
+  </div>
+</header>
+
+<!-- Campaign Progress -->
+<div class="campaign-bar">
+  <h2>Kenya Water Access Campaign 2025</h2>
+  <p class="sub">Funding EPA-compliant water filtration for 1,000+ school community members</p>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-stats">
+    <span><strong>$7,340</strong> raised</span>
+    <span><strong>73%</strong> of $10,000 goal</span>
+  </div>
+</div>
+
+<!-- Donation Widget -->
+<div class="widget">
+
+  <!-- Step Indicator -->
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-dot">1</div>
+      <div class="step-label">Amount</div>
+    </div>
+    <div class="step" id="step2">
+      <div class="step-dot">2</div>
+      <div class="step-label">Details</div>
+    </div>
+    <div class="step" id="step3">
+      <div class="step-dot">3</div>
+      <div class="step-label">Confirm</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: Amount -->
+  <div class="screen active" id="screen1">
+    <label>Select a donation amount</label>
+    <div class="amount-grid">
+      <button class="amt-btn" onclick="selectAmt(this, 15)">
+        <div class="amount">$15</div>
+        <div class="impact">1 month of clean water for a child</div>
+      </button>
+      <button class="amt-btn selected" onclick="selectAmt(this, 50)">
+        <div class="amount">$50</div>
+        <div class="impact">Filter components for one school tap</div>
+      </button>
+      <button class="amt-btn" onclick="selectAmt(this, 100)">
+        <div class="amount">$100</div>
+        <div class="impact">Full filtration unit installation</div>
+      </button>
+      <button class="amt-btn" onclick="selectAmt(this, 250)">
+        <div class="amount">$250</div>
+        <div class="impact">System maintenance for 6 months</div>
+      </button>
+      <button class="amt-btn" onclick="selectAmt(this, 500)">
+        <div class="amount">$500</div>
+        <div class="impact">Sponsor a full community tank</div>
+      </button>
+      <button class="amt-btn" onclick="selectAmt(this, 1000)">
+        <div class="amount">$1,000</div>
+        <div class="impact">Fund an entire project phase</div>
+      </button>
+    </div>
+
+    <label>Or enter a custom amount</label>
+    <div class="custom-wrap">
+      <span>$</span>
+      <input type="number" id="customAmt" placeholder="Other amount" oninput="onCustom(this)">
+    </div>
+
+    <label>Donation frequency</label>
+    <div class="freq-toggle">
+      <button class="freq-btn selected" onclick="selectFreq(this)">One-time</button>
+      <button class="freq-btn" onclick="selectFreq(this)">Monthly</button>
+      <button class="freq-btn" onclick="selectFreq(this)">Annually</button>
+    </div>
+
+    <button class="btn-primary" onclick="goTo(2)">Continue →</button>
+  </div>
+
+  <!-- SCREEN 2: Donor Details -->
+  <div class="screen" id="screen2">
+    <button class="btn-back" onclick="goTo(1)">← Back</button>
+
+    <div class="summary-box">
+      <div class="label">Your donation</div>
+      <div class="value" id="summaryAmt1">$50</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First name</label>
+        <input type="text" placeholder="Eden" id="firstName">
+      </div>
+      <div class="form-group">
+        <label>Last name</label>
+        <input type="text" placeholder="Funk" id="lastName">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email address</label>
+      <input type="email" placeholder="eden@example.com" id="email">
+    </div>
+    <div class="form-group">
+      <label>Card number</label>
+      <div class="card-row">
+        <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)">
+        <input type="text" placeholder="MM/YY" maxlength="5" oninput="fmtExpiry(this)">
+        <input type="text" placeholder="CVV" maxlength="4">
+      </div>
+    </div>
+
+    <div class="secure-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      256-bit SSL encrypted · PCI DSS compliant · Powered by Stripe
+    </div>
+
+    <button class="btn-primary" onclick="goTo(3)">Review Donation →</button>
+  </div>
+
+  <!-- SCREEN 3: Confirm -->
+  <div class="screen" id="screen3">
+    <button class="btn-back" onclick="goTo(2)">← Back</button>
+
+    <div class="summary-box" style="flex-direction:column; align-items:flex-start; gap:8px;">
+      <div style="display:flex;justify-content:space-between;width:100%">
+        <span class="label">Donation amount</span>
+        <span class="value" id="summaryAmt2">$50</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;font-size:13px;color:#888">
+        <span>Donor</span>
+        <span id="summaryName">Eden Funk</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;font-size:13px;color:#888">
+        <span>Frequency</span>
+        <span id="summaryFreq">One-time</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;font-size:13px;color:#888">
+        <span>Campaign</span>
+        <span>Kenya Water Access 2025</span>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:#888;margin-bottom:18px;">
+      Engineers Without Borders ASU Chapter is a 501(c)(3) nonprofit. Your donation is tax-deductible to the extent permitted by law. A receipt will be emailed to you.
+    </p>
+
+    <button class="btn-primary" onclick="submitDonation()">Donate Now 💙</button>
+  </div>
+
+  <!-- SCREEN 4: Success -->
+  <div class="screen" id="screen4">
+    <div class="success-screen">
+      <div class="success-icon">💙</div>
+      <h2>Thank you, <span id="thankName">Eden</span>!</h2>
+      <p>Your donation is making a real difference. Clean, safe water will reach over 1,000 students in Kenya thanks to supporters like you.</p>
+
+      <div class="impact-cards">
+        <div class="impact-card">
+          <div class="icon">💧</div>
+          <div class="text">Clean water access for 1,000+ students</div>
+        </div>
+        <div class="impact-card">
+          <div class="icon">🌍</div>
+          <div class="text">Projects across 8 countries</div>
+        </div>
+        <div class="impact-card">
+          <div class="icon">🎓</div>
+          <div class="text">100+ ASU engineers deployed</div>
+        </div>
+      </div>
+
+      <div class="receipt">
+        <div class="receipt-row"><span>Confirmation #</span><strong id="confNum">EWB-2025-XXXX</strong></div>
+        <hr class="divider">
+        <div class="receipt-row"><span>Amount</span><strong id="receiptAmt">$50</strong></div>
+        <div class="receipt-row"><span>Date</span><strong id="receiptDate"></strong></div>
+        <div class="receipt-row"><span>Campaign</span><strong>Kenya Water Access 2025</strong></div>
+        <hr class="divider">
+        <div class="receipt-row" style="font-size:12px;color:#aaa;"><span>Receipt sent to</span><span id="receiptEmail">—</span></div>
+      </div>
+
+      <button class="btn-primary" onclick="resetFlow()" style="max-width:300px;margin:0 auto;display:block;">Make Another Donation</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let selectedAmt = 50;
+  let selectedFreq = "One-time";
+
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('progressFill').style.width = '73%';
+    }, 300);
+  });
+
+  function selectAmt(btn, amt) {
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedAmt = amt;
+    document.getElementById('customAmt').value = '';
+  }
+
+  function onCustom(input) {
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+    selectedAmt = parseFloat(input.value) || 0;
+  }
+
+  function selectFreq(btn) {
+    document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedFreq = btn.textContent;
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen' + n).classList.add('active');
+
+    // Update steps
+    for (let i = 1; i <= 3; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active', 'done');
+      if (i < n) el.classList.add('done');
+      else if (i === n) el.classList.add('active');
+    }
+
+    // Update summaries
+    const fmt = '$' + (selectedAmt % 1 === 0 ? selectedAmt : selectedAmt.toFixed(2));
+    document.getElementById('summaryAmt1').textContent = fmt;
+    document.getElementById('summaryAmt2').textContent = fmt;
+    document.getElementById('summaryFreq').textContent = selectedFreq;
+
+    const first = document.getElementById('firstName')?.value || 'Eden';
+    const last = document.getElementById('lastName')?.value || 'Funk';
+    document.getElementById('summaryName').textContent = first + ' ' + last;
+  }
+
+  function fmtCard(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  function fmtExpiry(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    input.value = v;
+  }
+
+  function submitDonation() {
+    const first = document.getElementById('firstName')?.value || 'Eden';
+    const email = document.getElementById('email')?.value || '—';
+    const fmt = '$' + (selectedAmt % 1 === 0 ? selectedAmt : selectedAmt.toFixed(2));
+    const confNum = 'EWB-2025-' + Math.floor(1000 + Math.random() * 9000);
+
+    document.getElementById('thankName').textContent = first;
+    document.getElementById('receiptAmt').textContent = fmt;
+    document.getElementById('receiptEmail').textContent = email;
+    document.getElementById('confNum').textContent = confNum;
+    document.getElementById('receiptDate').textContent = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+    goTo(4);
+    // Update progress bar visually
+    const newPct = Math.min(100, 73 + Math.round(selectedAmt / 10000 * 100));
+    document.getElementById('progressFill').style.width = newPct + '%';
+  }
+
+  function resetFlow() {
+    selectedAmt = 50;
+    selectedFreq = 'One-time';
+    document.querySelectorAll('.amt-btn').forEach((b,i) => b.classList.toggle('selected', i===1));
+    document.querySelectorAll('.freq-btn').forEach((b,i) => b.classList.toggle('selected', i===0));
+    document.getElementById('customAmt').value = '';
+    goTo(1);
+  }
+</script>
+</body>
+</html>
